@@ -106,7 +106,7 @@ def smart_decision(assets: list[str], phases: list[str],
                 alt_pots = best_candidate['repurpose_pots']
                 reason = best_candidate['reason']
             else:
-                dec, alt_ind, alt_pots, reason = 'Watch', '-', None, 'Between thresholds - gather more data'
+                dec, alt_ind, alt_pots, reason = 'Go', '-', None, '-'
 
         results.append({
             'Asset': asset, 'Phase': phase,
