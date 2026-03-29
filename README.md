@@ -35,11 +35,11 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 
 | Asset | Phase | Indication | PoTS | Decision |
 |-------|-------|------------|------|----------|
-| A | II | SLE | 25.0% | Repurpose (Lupus Nephritis) |
-| B | II | Lupus Nephritis | 33.3% | Go |
-| C | I | Type 2 Diabetes | 16.7% | Go |
-| D | III | NAFLD | 41.7% | Go |
-| E | I | Rare Haem (PNH) | 25.0% | Go |
+| A | II | SLE | 29.4% | Go |
+| B | II | Lupus Nephritis | 23.5% | Repurpose (SLE) |
+| C | I | Type 2 Diabetes | 8.7% | Kill |
+| D | III | NAFLD | 47.1% | Go |
+| E | I | Rare Haem (PNH) | 26.7% | Go |
 
 *All data is simulated. This is a methodological demonstration, not a clinical claim.*
 
