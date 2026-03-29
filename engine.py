@@ -72,30 +72,53 @@ def smart_decision(assets: list[str], phases: list[str],
         kill_t = PHASE_THRESHOLDS[phase]['kill'] * thresh_scale
         go_t = PHASE_THRESHOLDS[phase]['go'] * thresh_scale
 
+        # Calculate Repurpose PoTS with a Safety De-risking Bonus (from literature)
+        # Repurposed drugs often have ~2-3x higher overall success because safety is de-risked.
+        SAFETY_BONUS = 1.4  # Conservative 40% boost for established safety/PK
+        
         candidates = repurpose_map[repurpose_map['asset'] == asset].copy()
         best_candidate = None
         if len(candidates) > 0:
-            candidates['repurpose_pots'] = mean[i] * candidates['similarity_score']
+            # We apply the similarity score but also the safety bonus
+            candidates['repurpose_pots'] = np.minimum(0.95, mean[i] * candidates['similarity_score'] * SAFETY_BONUS)
             best_candidate = candidates.loc[candidates['repurpose_pots'].idxmax()]
 
+        # REFINED DECISION LOGIC:
+        # Go: Strong evidence (lower bound of CI) exceeds the Go threshold
         if lo[i] > go_t:
             dec, alt_ind, alt_pots, reason = 'Go', '-', None, '-'
+        
+        # Kill: Weak evidence (upper bound of CI) fails the Kill threshold
+        # AND we check if repurposing is actually a better bet
         elif hi[i] < kill_t:
-            if best_candidate is not None and best_candidate['similarity_score'] > 0.5:
+            if best_candidate is not None and best_candidate['repurpose_pots'] > mean[i] * 1.2:
                 dec = 'Repurpose'
                 alt_ind = best_candidate['alt_indication']
                 alt_pots = best_candidate['repurpose_pots']
                 reason = best_candidate['reason']
             else:
                 dec, alt_ind, alt_pots, reason = 'Kill', '-', None, '-'
+        
+        # Repurpose: If the original is uncertain (between thresholds) 
+        # OR if a repurposed indication has significantly higher PoTS
         else:
-            dec = 'Repurpose'
-            if best_candidate is not None:
+            if best_candidate is not None and best_candidate['repurpose_pots'] > mean[i]:
+                dec = 'Repurpose'
                 alt_ind = best_candidate['alt_indication']
                 alt_pots = best_candidate['repurpose_pots']
                 reason = best_candidate['reason']
             else:
-                alt_ind, alt_pots, reason = 'No candidate', None, '-'
+                # If no better repurpose exists and we are in the uncertainty zone,
+                # we default to 'Go' if mean > kill_t, else 'Kill' or 'Repurpose'
+                # but for simplicity in this engine, we'll call it 'Repurpose' 
+                # (meaning 'Explore Alternatives/Additional Data')
+                dec = 'Repurpose'
+                if best_candidate is not None:
+                    alt_ind = best_candidate['alt_indication']
+                    alt_pots = best_candidate['repurpose_pots']
+                    reason = best_candidate['reason']
+                else:
+                    alt_ind, alt_pots, reason = 'No candidate', None, '-'
 
         results.append({
             'Asset': asset, 'Phase': phase,
