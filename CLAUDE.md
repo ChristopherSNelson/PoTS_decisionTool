@@ -122,6 +122,9 @@ Do not report a task as complete unless the notebook executes cleanly and plots 
 - 2026-03-28: matplotlib `$` in legend labels triggers mathtext, collapsing spaces. Rule: use `set_parse_math(False)` or `chr(36)` for dollar signs in legend text.
 - 2026-03-28: Bar chart labels placed outside large bars get clipped at plot boundary. Rule: place labels inside bars (white bold) when bar is large enough.
 - 2026-03-28: Used flat kill/go thresholds across all phases. Rule: thresholds must be phase-dependent.
+- 2026-03-28: CI-upper-based kill (`hi < kill_t`) almost never fires with typical interim data - requires overwhelming evidence. Rule: use mean-based kill (`mean < kill_t`). Phase I kill threshold should be 0.10, not 0.05, when using mean-based criterion.
+- 2026-03-28: nbviewer caches aggressively - `?flush_cache=true` is unreliable. Rule: use GitHub native notebook renderer link instead of nbviewer.
+- 2026-03-28: Checked prior parameters wrong - assets.csv stores `prior_successes` and `prior_failures`, but notebook sets `alpha_prior = prior_successes + 1`. Always account for the +1 when computing expected posterior means from interim data.
 
 ---
 
@@ -129,7 +132,7 @@ Do not report a task as complete unless the notebook executes cleanly and plots 
 
 - This project uses Jupyter notebooks, not scripts or pipelines.
 - No patient data. All data is synthetic.
-- Interactive controls via ipywidgets (not Streamlit).
+- No ipywidgets interactive section - removed as it doesn't work in GitHub/nbviewer static render.
 - Rare disease / biopharma focus for UK fellowship context.
 
 ---
