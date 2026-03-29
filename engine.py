@@ -7,7 +7,7 @@ from scipy.linalg import cholesky
 from scipy.stats import norm
 
 PHASE_THRESHOLDS = {
-    'Phase I':   {'kill': 0.05, 'go': 0.15},
+    'Phase I':   {'kill': 0.10, 'go': 0.15},
     'Phase II':  {'kill': 0.10, 'go': 0.25},
     'Phase III': {'kill': 0.15, 'go': 0.40},
 }
@@ -88,8 +88,8 @@ def smart_decision(assets: list[str], phases: list[str],
         if mean[i] > go_t:
             dec, alt_ind, alt_pots, reason = 'Go', '-', None, '-'
 
-        # Kill: Upper bound of CI falls below the Kill threshold
-        elif hi[i] < kill_t:
+        # Kill: Posterior mean falls below the Kill threshold
+        elif mean[i] < kill_t:
             if best_candidate is not None and best_candidate['repurpose_pots'] > mean[i] * 1.2:
                 dec = 'Repurpose'
                 alt_ind = best_candidate['alt_indication']

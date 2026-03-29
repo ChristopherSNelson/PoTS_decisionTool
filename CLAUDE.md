@@ -44,13 +44,13 @@ PoTS_decisionTool/
 - **PoTS (probability of technical success)** is modeled as a Beta-Binomial posterior. Prior parameters come from `data/assets.csv`.
 - **Decision thresholds are phase-dependent** - the bar rises with capital commitment:
 
-  | Phase     | Kill (CI upper <) | Go (CI lower >) |
-  |-----------|-------------------|-----------------|
-  | Phase I   | 0.05              | 0.15            |
-  | Phase II  | 0.10              | 0.25            |
-  | Phase III | 0.15              | 0.40            |
+  | Phase     | Kill (mean <) | Go (mean >) |
+  |-----------|---------------|-------------|
+  | Phase I   | 0.10          | 0.15        |
+  | Phase II  | 0.10          | 0.25        |
+  | Phase III | 0.15          | 0.40        |
 
-- **Decisions use 90% credible intervals**, not point estimates. "Kill if CI upper < threshold" is more defensible than "kill if mean < threshold."
+- **Kill uses posterior mean**, not CI upper. CI-upper-based kill is too conservative with typical interim data sizes - it almost never fires. Mean-based kill is simpler and visually intuitive. The 90% CI still displays on charts for uncertainty communication.
 - **Correlation propagation**: When an asset fails, correlated assets receive virtual failures weighted by the correlation matrix. This is the core of portfolio-level thinking.
 - **Repurposing is biology-driven**, not an arbitrary middle bucket. Repurpose PoTS = original PoTS * similarity score. Candidates come from `data/repurpose_map.csv`.
 - **Expected NPV**: `eNPV = PoTS * Revenue - Cost`. Capital allocation is greedy by eNPV rank within a fixed budget.
