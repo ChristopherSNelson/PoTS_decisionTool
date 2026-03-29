@@ -25,7 +25,7 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 
 - **Bayesian updating** - Beta-Binomial posteriors combine historical priors with interim readouts
 - **Correlated failure propagation** - when one asset fails, correlated assets absorb virtual failures weighted by a shared-biology correlation matrix
-- **Biology-driven repurposing** - repurpose PoTS transfers from original indication via a mechanistic similarity score, not an arbitrary fallback
+- **Biology-driven repurposing** - Continue-zone assets pivot to an alternative indication if mechanistic similarity is strong (>= 0.65); repurpose PoTS = original PoTS * similarity score
 - **eNPV capital allocation** - greedy allocation under a fixed budget, ranked by risk-adjusted expected value
 - **Monte Carlo simulation** - 10,000 portfolio simulations via Gaussian copula to respect asset correlations
 
@@ -35,11 +35,11 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 
 | Asset | Phase | Indication | PoTS | Decision |
 |-------|-------|------------|------|----------|
-| A | II | SLE | 29.4% | Go |
-| B | II | Lupus Nephritis | 23.5% | Continue |
-| C | I | Type 2 Diabetes | 8.7% | Kill |
-| D | III | NAFLD | 47.1% | Go |
-| E | I | Rare Haem (PNH) | 26.7% | Go |
+| A | II | SLE | 25.0% | Repurpose (Lupus Nephritis) |
+| B | II | Lupus Nephritis | 33.3% | Go |
+| C | I | Type 2 Diabetes | 16.7% | Go |
+| D | III | NAFLD | 41.7% | Go |
+| E | I | Rare Haem (PNH) | 25.0% | Go |
 
 *All data is simulated. This is a methodological demonstration, not a clinical claim.*
 
