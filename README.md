@@ -2,7 +2,7 @@
 
 A Bayesian engine for go/kill/repurpose decisions across a small biopharma portfolio. Built to explore how adaptive probability-of-technical-success (PoTS) models can sharpen capital allocation decisions in early-stage drug development.
 
-**View the notebook**: [nbviewer link](https://nbviewer.org/github/ChristopherSNelson/PoTS_decisionTool/blob/main/portfolio_demo.ipynb)
+**View the notebook**: [nbviewer link](https://nbviewer.org/github/ChristopherSNelson/PoTS_decisionTool/blob/main/portfolio_demo.ipynb?flush_cache=true)
 
 ---
 
