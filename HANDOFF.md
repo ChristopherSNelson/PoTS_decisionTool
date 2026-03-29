@@ -1,21 +1,23 @@
 # HANDOFF.md - PoTS Decision Engine
 
-## Session summary (2026-03-28)
+## Session summary (2026-03-29)
 
 ### What was done
-- Cleared duplicate notebook outputs (stale from multiple prior executions)
-- Removed ipywidgets interactive section (Section 10) - broken in nbviewer, not worth keeping
-- Fixed Kill decision logic: changed `hi < kill_t` to `mean < kill_t` in `engine.py`
-  - CI-upper-based kill almost never fired with typical interim data sizes
-  - Mean-based kill is simpler, visually intuitive (bar centre below kill line)
-- Raised Phase I kill threshold: 0.05 - 0.10 (0.05 was designed for CI-upper; too tight for mean)
-- Updated INTERIM data in notebook to plausible mid-trial readouts by indication
-- Decisions now: A=Go, B=Continue, C=Kill, D=Go, E=Go (was all Go/Continue)
-- Rewrote README for VC audience - short, leads with decision chart and snapshot table
-- Switched notebook link from nbviewer (caching issues) to GitHub native renderer
+- Audited codebase for "AI-isms": identified `SAFETY_BONUS = 1.4` magic multiplier in `engine.py` and defensive "not an arbitrary fallback" phrasing in README
+- Removed `SAFETY_BONUS` entirely - it was undocumented, unsourced, and contradicted the CLAUDE.md formula (repurpose PoTS = original PoTS * similarity score)
+- Redesigned repurpose logic: repurposing is now a **Continue-zone pivot only**
+  - Kill zone always kills (mean * similarity <= mean < kill_t by construction - can't rescue a failing asset this way)
+  - Continue zone repurposes if `similarity_score >= 0.65`, otherwise Continue
+- Updated README portfolio snapshot table - was showing completely fabricated numbers; now matches actual notebook output
+- Fixed README repurposing bullet to describe actual logic instead of defensive rhetoric
+- Notebook re-executed cleanly, all plots regenerated and committed
 
-### Current state
-Notebook executes cleanly. All plots regenerated. Repo is up to date with origin/main.
+### Current decisions (with interim data applied in notebook)
+- Asset A: Repurpose (Lupus Nephritis, similarity=0.75) - sits in Continue zone
+- Asset B: **notebook shows Continue or Repurpose** (interim data drops it below Go threshold); README shows Go (raw prior only) - **mismatch not yet fixed**
+- Asset C: Go (raw prior)
+- Asset D: Go
+- Asset E: Go
 
 ---
 
@@ -24,14 +26,11 @@ Notebook executes cleanly. All plots regenerated. Repo is up to date with origin
 | Condition | Decision |
 |-----------|----------|
 | mean > go_t | Go |
-| mean < kill_t AND no better repurpose | Kill |
-| mean < kill_t AND repurpose_pots > mean * 1.2 | Repurpose |
-| between thresholds AND repurpose_pots > mean * 1.2 | Repurpose |
-| between thresholds, no better repurpose | Continue |
+| mean < kill_t | Kill |
+| between thresholds AND similarity_score >= 0.65 | Repurpose |
+| between thresholds, similarity < 0.65 | Continue |
 
 Phase thresholds: Phase I (kill=0.10, go=0.15), Phase II (kill=0.10, go=0.25), Phase III (kill=0.15, go=0.40)
-
-Expected output with current interim data: A=Go, B=Continue, C=Kill, D=Go, E=Go
 
 ---
 
@@ -51,12 +50,12 @@ README.md               - Short VC-readable overview with decision chart
 
 ## Next steps (priority order)
 
-1. **Repurpose decision** - currently never fires with default data. Asset E (complement C5, aHUS similarity=0.85) is just below the trigger threshold (needs sim > 0.857). Worth showing Repurpose in at least one asset for a complete demo.
-2. **Streamlit / Hugging Face** - if deployment is needed, try Hugging Face Spaces (simpler auth than Streamlit Cloud). Do not retry Streamlit Community Cloud.
-3. **README plot freshness** - interactive_demo.png still referenced nowhere, can be deleted from plots/.
+1. **README vs notebook mismatch** - README snapshot table uses raw priors; notebook applies interim data. Either update README to note this explicitly, or generate the table programmatically from the notebook output. Asset B is the visible discrepancy (Go in README, Continue/Repurpose in notebook).
+2. **Kill decision missing from demo** - with current interim data and new logic, no asset hits Kill. Worth tweaking one asset's interim data to show Kill for a complete Go/Kill/Continue/Repurpose demo.
+3. **Streamlit / Hugging Face** - if deployment needed, try Hugging Face Spaces. Do not retry Streamlit Community Cloud.
 
 ---
 
 ## Blockers
 - Streamlit Community Cloud deployment blocked (see CLAUDE.md Future Directions)
-- nbviewer caches aggressively - GitHub native renderer is the workaround
+- README snapshot table is manually maintained - will drift from notebook output over time
