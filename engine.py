@@ -84,7 +84,7 @@ def smart_decision(assets: list[str], phases: list[str],
             best_candidate = candidates.loc[candidates['repurpose_pots'].idxmax()]
 
         # DECISION LOGIC:
-        # Go: Mean exceeds the Go threshold
+        # Go: Mean exceeds the Go threshold - advance to next phase
         if mean[i] > go_t:
             dec, alt_ind, alt_pots, reason = 'Go', '-', None, '-'
 
@@ -98,7 +98,7 @@ def smart_decision(assets: list[str], phases: list[str],
             else:
                 dec, alt_ind, alt_pots, reason = 'Kill', '-', None, '-'
 
-        # Uncertainty zone: between kill and go thresholds
+        # Continue: between thresholds - keep running, gather more data
         else:
             if best_candidate is not None and best_candidate['repurpose_pots'] > mean[i] * 1.2:
                 dec = 'Repurpose'
@@ -106,7 +106,7 @@ def smart_decision(assets: list[str], phases: list[str],
                 alt_pots = best_candidate['repurpose_pots']
                 reason = best_candidate['reason']
             else:
-                dec, alt_ind, alt_pots, reason = 'Go', '-', None, '-'
+                dec, alt_ind, alt_pots, reason = 'Continue', '-', None, '-'
 
         results.append({
             'Asset': asset, 'Phase': phase,

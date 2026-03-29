@@ -158,7 +158,7 @@ if do_propagate:
 # ============================================================
 st.header("5. Portfolio Decisions")
 
-DEC_COLORS = {"Go": "#2ecc71", "Kill": "#e74c3c", "Repurpose": "#f39c12"}
+DEC_COLORS = {"Go": "#2ecc71", "Kill": "#e74c3c", "Repurpose": "#f39c12", "Continue": "#3498db"}
 
 fig_dec = go.Figure()
 fig_dec.add_trace(go.Bar(
