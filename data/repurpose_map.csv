@@ -1,0 +1,11 @@
+asset,alt_indication,similarity_score,reason
+Asset A,Lupus Nephritis,0.75,Shared JAK-STAT pathway with renal inflammation
+Asset A,Sjogren's Syndrome,0.55,Autoimmune overlap via B-cell activation
+Asset B,SLE,0.75,Shared JAK-STAT pathway with systemic autoimmunity
+Asset B,Dermatomyositis,0.45,Partial immune overlap
+Asset C,NAFLD,0.60,Beta-cell stress and hepatic lipid metabolism overlap
+Asset C,Obesity (GLP-1),0.70,Direct GLP-1 receptor agonism
+Asset D,Type 2 Diabetes,0.60,Liver-pancreas metabolic axis
+Asset D,NASH Fibrosis,0.80,Same hepatic lipid target with fibrotic endpoint
+Asset E,aHUS,0.85,Same complement C5 target different disease
+Asset E,Myasthenia Gravis,0.50,Complement-mediated autoimmune

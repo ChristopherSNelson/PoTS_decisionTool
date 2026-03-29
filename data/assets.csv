@@ -1,0 +1,6 @@
+asset,phase,prior_successes,prior_failures,indication,estimated_revenue_m,estimated_cost_m,correlation_group,target_pathway
+Asset A,Phase II,2,8,SLE,800,120,autoimmune,JAK-STAT
+Asset B,Phase II,3,7,Lupus Nephritis,650,100,autoimmune,JAK-STAT
+Asset C,Phase I,1,9,Type 2 Diabetes,1200,200,metabolic,Beta-cell / GLP-1
+Asset D,Phase III,4,6,NAFLD,900,80,metabolic,Liver lipid metabolism
+Asset E,Phase I,2,8,Rare Haem (PNH),500,150,haem,Complement C5
