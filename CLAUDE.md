@@ -131,3 +131,15 @@ Do not report a task as complete unless the notebook executes cleanly and plots 
 - No patient data. All data is synthetic.
 - Interactive controls via ipywidgets (not Streamlit).
 - Rare disease / biopharma focus for UK fellowship context.
+
+---
+
+## Future directions
+
+### Streamlit deployment (not attempted - blocked)
+
+`app.py` and `engine.py` exist and the Streamlit app runs correctly locally (`streamlit run app.py`). Deployment to Streamlit Community Cloud was attempted but failed repeatedly with "The app's code is not connected to a remote GitHub repository" despite the repo being public and credentials being correct. Root cause unclear - likely a GitHub App authorization issue on the Streamlit side that requires manual intervention through their support.
+
+**If revisiting**: Try Hugging Face Spaces (huggingface.co - create Space, type Streamlit, push same code). Simpler auth than Streamlit Cloud. Alternatively, the notebook is publicly viewable at `https://nbviewer.org/github/ChristopherSNelson/PoTS_decisionTool/blob/main/portfolio_demo.ipynb` which is sufficient for fellowship review purposes.
+
+**Do not attempt Streamlit Community Cloud again without a clear fix in hand.**
