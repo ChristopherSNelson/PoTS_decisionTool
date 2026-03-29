@@ -125,6 +125,7 @@ Do not report a task as complete unless the notebook executes cleanly and plots 
 - 2026-03-28: CI-upper-based kill (`hi < kill_t`) almost never fires with typical interim data - requires overwhelming evidence. Rule: use mean-based kill (`mean < kill_t`). Phase I kill threshold should be 0.10, not 0.05, when using mean-based criterion.
 - 2026-03-28: nbviewer caches aggressively - `?flush_cache=true` is unreliable. Rule: use GitHub native notebook renderer link instead of nbviewer.
 - 2026-03-28: Checked prior parameters wrong - assets.csv stores `prior_successes` and `prior_failures`, but notebook sets `alpha_prior = prior_successes + 1`. Always account for the +1 when computing expected posterior means from interim data.
+- 2026-03-29: README snapshot table populated with raw prior values instead of posterior values after interim data. Rule: the README table must reflect notebook output with INTERIM applied - always compute decisions by running `apply_interim` before `smart_decision`, not from raw priors.
 - 2026-03-29: Added `SAFETY_BONUS = 1.4` magic multiplier to repurpose PoTS with a vague "from literature" comment. Rule: no magic multipliers. If mean < kill_t, then mean * similarity_score < kill_t always - repurposing can't rescue a Kill-zone asset mathematically. Repurpose is a Continue-zone pivot: trigger when similarity_score >= 0.65, not when repurpose_pots clears an arbitrary bar.
 
 ---
