@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-from scipy.stats import beta
+from scipy.stats import beta, betabinom
 from scipy.linalg import cholesky
 from scipy.stats import norm
 
@@ -166,3 +166,73 @@ def build_repurpose_table(assets: list[str], indications: list[str],
                 'Reason': cand['reason'],
             })
     return pd.DataFrame(rows)
+
+
+def value_of_information(
+    alpha: np.ndarray,
+    beta_param: np.ndarray,
+    phases: list[str],
+    revenue: np.ndarray,
+    cost: np.ndarray,
+    sample_sizes: np.ndarray | None = None,
+) -> dict:
+    """Compute EVSI and decision resolution probability per asset.
+
+    For each asset and each candidate additional sample size N, uses the
+    Beta-Binomial predictive distribution to enumerate all possible
+    outcomes k = 0..N.  For each outcome the posterior is updated and:
+
+      - Decision resolution: does the new mean cross a Go or Kill threshold?
+      - EVSI: E_k[max(new_mean*R - C, 0)] - max(current_mean*R - C, 0)
+
+    Returns a dict keyed by asset index, each containing arrays of
+    resolution_prob, evsi, go_prob, kill_prob over sample_sizes.
+    """
+    if sample_sizes is None:
+        sample_sizes = np.array([5, 10, 15, 20, 30, 50, 75, 100])
+
+    n_assets = len(alpha)
+    results = {}
+
+    for i in range(n_assets):
+        a, b = alpha[i], beta_param[i]
+        phase = phases[i]
+        kill_t = PHASE_THRESHOLDS[phase]['kill']
+        go_t = PHASE_THRESHOLDS[phase]['go']
+
+        current_mean = a / (a + b)
+        current_best = max(current_mean * revenue[i] - cost[i], 0.0)
+
+        resolution_probs = []
+        evsi_values = []
+        go_probs = []
+        kill_probs = []
+
+        for N in sample_sizes:
+            k_values = np.arange(0, N + 1)
+            pred_probs = betabinom.pmf(k_values, N, a, b)
+
+            new_means = (a + k_values) / (a + b + N)
+
+            is_go = new_means > go_t
+            is_kill = new_means < kill_t
+
+            # Optimal decision value for each possible outcome
+            optimal_value = np.maximum(new_means * revenue[i] - cost[i], 0.0)
+
+            resolution_probs.append((pred_probs * (is_go | is_kill)).sum())
+            evsi_values.append(max((pred_probs * optimal_value).sum() - current_best, 0.0))
+            go_probs.append((pred_probs * is_go).sum())
+            kill_probs.append((pred_probs * is_kill).sum())
+
+        results[i] = {
+            'resolution_prob': np.array(resolution_probs),
+            'evsi': np.array(evsi_values),
+            'go_prob': np.array(go_probs),
+            'kill_prob': np.array(kill_probs),
+            'current_mean': current_mean,
+            'kill_t': kill_t,
+            'go_t': go_t,
+        }
+
+    return results, sample_sizes

@@ -28,6 +28,7 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 - **Biology-driven repurposing** - Continue-zone assets pivot to an alternative indication if mechanistic similarity is strong (>= 0.65); repurpose PoTS = original PoTS * similarity score
 - **eNPV capital allocation** - greedy allocation under a fixed budget, ranked by risk-adjusted expected value
 - **Monte Carlo simulation** - 10,000 portfolio simulations via Gaussian copula to respect asset correlations
+- **Value of Information analysis** - Beta-Binomial predictive distribution computes the dollar value of enrolling N more patients before committing capital, answering "do we know enough to decide?"
 
 ---
 
@@ -42,6 +43,18 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 | E | I | Rare Haem (PNH) | 26.7% | Go |
 
 *All data is simulated. This is a methodological demonstration, not a clinical claim.*
+
+---
+
+## Value of Information - "Do we know enough to decide?"
+
+For each asset, the engine simulates every possible outcome of enrolling N additional patients (via the Beta-Binomial predictive distribution) and asks: would the new data change the decision? The Expected Value of Sample Information (EVSI) quantifies this in dollar terms.
+
+![Value of Information](plots/value_of_information.png)
+
+Key insight: **Asset E (PNH, Phase I)** clears the Go threshold on PoTS alone, but has the highest EVSI at $14M - because the data is thin (1/3 responders) and the cost is $150M. A small chance of discovering it should be killed is worth a lot of money. Meanwhile **Asset D (NAFLD, Phase III)** is a confident Go with near-zero EVSI - the data already speaks clearly.
+
+This is the question portfolio managers actually lose sleep over: *"Is it worth running 20 more patients, or do we already know enough?"*
 
 ---
 
