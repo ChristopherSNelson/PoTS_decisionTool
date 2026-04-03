@@ -29,6 +29,7 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 - **eNPV capital allocation** - greedy allocation under a fixed budget, ranked by risk-adjusted expected value
 - **Monte Carlo simulation** - 10,000 portfolio simulations via Gaussian copula to respect asset correlations
 - **Value of Information analysis** - Beta-Binomial predictive distribution computes the dollar value of enrolling N more patients before committing capital, answering "do we know enough to decide?"
+- **Scenario stress testing** - Tornado diagram + Bear/Base/Bull scenarios vary correlation, revenue, and cost assumptions to show which levers most move portfolio value
 
 ---
 
@@ -55,6 +56,22 @@ For each asset, the engine simulates every possible outcome of enrolling N addit
 Key insight: **Asset E (PNH, Phase I)** clears the Go threshold on PoTS alone, but has the highest EVSI at $14M - because the data is thin (1/3 responders) and the cost is $150M. A small chance of discovering it should be killed is worth a lot of money. Meanwhile **Asset D (NAFLD, Phase III)** is a confident Go with near-zero EVSI - the data already speaks clearly.
 
 This is the question portfolio managers actually lose sleep over: *"Is it worth running 20 more patients, or do we already know enough?"*
+
+---
+
+## Scenario stress test - "What could break this portfolio?"
+
+Tornado diagram shows which assumptions drive portfolio value most. Bear/Base/Bull scenarios combine them.
+
+![Tornado](plots/stress_test_tornado.png)
+
+| Scenario | Median | P(positive) | 5th pct | 95th pct |
+|----------|--------|-------------|---------|---------|
+| Bear (corr=0.8, rev-20%, cost+20%) | -$60M | 43% | -$780M | $1.1B |
+| Base | $250M | 68% | -$650M | $1.7B |
+| Bull (corr=0.4, rev+20%, cost-20%) | $560M | 80% | -$520M | $2.3B |
+
+Revenue is the single biggest lever (swing: $360M from -20% to +20%). Correlation has surprisingly little effect on the median - but watch the tail: Bear-case correlation widens the loss scenarios significantly.
 
 ---
 

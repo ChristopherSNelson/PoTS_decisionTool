@@ -147,6 +147,69 @@ def monte_carlo_portfolio(alpha: np.ndarray, beta_param: np.ndarray,
     return pots_samples, portfolio_value
 
 
+def _build_corr_matrix(groups: np.ndarray, within_corr: float,
+                        between_corr: float = 0.15) -> np.ndarray:
+    n = len(groups)
+    corr = np.eye(n)
+    for i in range(n):
+        for j in range(i + 1, n):
+            val = within_corr if groups[i] == groups[j] else between_corr
+            corr[i, j] = corr[j, i] = val
+    return corr
+
+
+def stress_test(
+    alpha: np.ndarray,
+    beta_param: np.ndarray,
+    groups: np.ndarray,
+    revenue: np.ndarray,
+    cost: np.ndarray,
+    n_sims: int = 5000,
+) -> dict:
+    """Tornado diagram inputs and Bear/Base/Bull scenario results.
+
+    Varies one assumption at a time (tornado) and three in combination
+    (scenarios).  Returns raw portfolio value arrays so the caller can
+    compute any statistics it needs.
+    """
+    base_corr = _build_corr_matrix(groups, 0.6)
+
+    def run(corr=None, rev_mult=1.0, cost_mult=1.0):
+        c = base_corr if corr is None else corr
+        _, pv = monte_carlo_portfolio(
+            alpha, beta_param, c, revenue * rev_mult, cost * cost_mult, n_sims)
+        return pv
+
+    base_pv = run()
+    base_med = float(np.median(base_pv))
+
+    # Tornado: one factor at a time, keyed by display label
+    factors = {
+        'Within-group correlation\n(0.4 vs 0.8)': (
+            np.median(run(corr=_build_corr_matrix(groups, 0.4))),
+            np.median(run(corr=_build_corr_matrix(groups, 0.8))),
+        ),
+        'Revenue assumption\n(-20% vs +20%)': (
+            np.median(run(rev_mult=0.80)),
+            np.median(run(rev_mult=1.20)),
+        ),
+        'Development cost\n(-20% vs +20%)': (
+            np.median(run(cost_mult=1.20)),   # cost up = value down
+            np.median(run(cost_mult=0.80)),   # cost down = value up
+        ),
+    }
+
+    # Scenarios: combine assumptions
+    scenarios = {
+        'Bear': run(corr=_build_corr_matrix(groups, 0.8), rev_mult=0.80, cost_mult=1.20),
+        'Base': base_pv,
+        'Bull': run(corr=_build_corr_matrix(groups, 0.4), rev_mult=1.20, cost_mult=0.80),
+    }
+
+    return {'base_med': base_med, 'base_pv': base_pv,
+            'factors': factors, 'scenarios': scenarios}
+
+
 def build_repurpose_table(assets: list[str], indications: list[str],
                           mean: np.ndarray, repurpose_map: pd.DataFrame) -> pd.DataFrame:
     """Full repurpose analysis for all assets."""
