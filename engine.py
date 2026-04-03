@@ -181,21 +181,20 @@ def stress_test(
         return pv
 
     base_pv = run()
-    base_med = float(np.median(base_pv))
 
-    # Tornado: one factor at a time, keyed by display label
+    # Tornado: one factor at a time - return raw arrays so caller picks any stat
     factors = {
         'Within-group correlation\n(0.4 vs 0.8)': (
-            np.median(run(corr=_build_corr_matrix(groups, 0.4))),
-            np.median(run(corr=_build_corr_matrix(groups, 0.8))),
+            run(corr=_build_corr_matrix(groups, 0.4)),
+            run(corr=_build_corr_matrix(groups, 0.8)),
         ),
         'Revenue assumption\n(-20% vs +20%)': (
-            np.median(run(rev_mult=0.80)),
-            np.median(run(rev_mult=1.20)),
+            run(rev_mult=0.80),
+            run(rev_mult=1.20),
         ),
         'Development cost\n(-20% vs +20%)': (
-            np.median(run(cost_mult=1.20)),   # cost up = value down
-            np.median(run(cost_mult=0.80)),   # cost down = value up
+            run(cost_mult=1.20),   # cost up = value down
+            run(cost_mult=0.80),   # cost down = value up
         ),
     }
 
@@ -206,7 +205,7 @@ def stress_test(
         'Bull': run(corr=_build_corr_matrix(groups, 0.4), rev_mult=1.20, cost_mult=0.80),
     }
 
-    return {'base_med': base_med, 'base_pv': base_pv,
+    return {'base_pv': base_pv,
             'factors': factors, 'scenarios': scenarios}
 
 
