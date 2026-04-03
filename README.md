@@ -61,9 +61,13 @@ This is the question portfolio managers actually lose sleep over: *"Is it worth 
 
 ## Scenario stress test - "What could break this portfolio?"
 
-Tornado diagram shows which assumptions drive portfolio value most. Bear/Base/Bull scenarios combine them.
+Three tornado panels show the same assumptions at the median, worst 5%, and best 5% of outcomes - revealing that different levers dominate depending on where you look in the distribution.
 
 ![Tornado](plots/stress_test_tornado.png)
+
+- **Median** - revenue dominates ($70M to $430M swing). Correlation barely registers.
+- **5th percentile (worst 5%)** - cost matters most in bad scenarios; correlation is still flat because in catastrophic runs all bets are wrong regardless of structure.
+- **95th percentile (best 5%)** - revenue dominates even more strongly ($1.2B to $2.2B). The upside is almost entirely a function of market sizing assumptions.
 
 | Scenario | Median | P(positive) | 5th pct | 95th pct |
 |----------|--------|-------------|---------|---------|
@@ -71,7 +75,7 @@ Tornado diagram shows which assumptions drive portfolio value most. Bear/Base/Bu
 | Base | $250M | 68% | -$650M | $1.7B |
 | Bull (corr=0.4, rev+20%, cost-20%) | $560M | 80% | -$520M | $2.3B |
 
-Revenue is the single biggest lever (swing: $360M from -20% to +20%). Correlation has surprisingly little effect on the median - but watch the tail: Bear-case correlation widens the loss scenarios significantly.
+Correlation barely moves the median but does widen the loss tail - it is a risk lever, not a return lever.
 
 ---
 
