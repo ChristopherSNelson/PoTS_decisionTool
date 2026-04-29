@@ -114,14 +114,16 @@ def smart_decision(assets: list[str], phases: list[str],
 
 
 def capital_allocation(pots_mean: np.ndarray, revenue: np.ndarray,
-                       cost: np.ndarray, budget: float):
-    """Greedy eNPV-ranked allocation under budget."""
+                       cost: np.ndarray, budget: float,
+                       decisions: list | None = None):
+    """Greedy eNPV-ranked allocation under budget. Skips Kill decisions if provided."""
     enpv = pots_mean * revenue - cost
     order = np.argsort(-enpv)
     funded = np.zeros(len(pots_mean), dtype=bool)
     remaining = budget
     for idx in order:
-        if enpv[idx] > 0 and cost[idx] <= remaining:
+        eligible = decisions is None or decisions[idx] in ('Go', 'Continue', 'Repurpose')
+        if eligible and enpv[idx] > 0 and cost[idx] <= remaining:
             funded[idx] = True
             remaining -= cost[idx]
     return enpv, funded, remaining
@@ -237,6 +239,7 @@ def value_of_information(
     revenue: np.ndarray,
     cost: np.ndarray,
     sample_sizes: np.ndarray | None = None,
+    cost_per_patient: float = 0.0,
 ) -> dict:
     """Compute EVSI and decision resolution probability per asset.
 
@@ -287,9 +290,13 @@ def value_of_information(
             go_probs.append((pred_probs * is_go).sum())
             kill_probs.append((pred_probs * is_kill).sum())
 
+        evsi_arr = np.array(evsi_values)
+        net_evsi = np.maximum(evsi_arr - cost_per_patient * sample_sizes, 0.0)
+
         results[i] = {
             'resolution_prob': np.array(resolution_probs),
-            'evsi': np.array(evsi_values),
+            'evsi': evsi_arr,
+            'net_evsi': net_evsi,
             'go_prob': np.array(go_probs),
             'kill_prob': np.array(kill_probs),
             'current_mean': current_mean,

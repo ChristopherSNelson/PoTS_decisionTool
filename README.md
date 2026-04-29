@@ -26,10 +26,11 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 - **Bayesian updating** - Beta-Binomial posteriors combine historical priors with interim readouts
 - **Correlated failure propagation** - when one asset fails, correlated assets absorb virtual failures weighted by a shared-biology correlation matrix
 - **Biology-driven repurposing** - Continue-zone assets pivot to an alternative indication if mechanistic similarity is strong (>= 0.65); repurpose PoTS = original PoTS * similarity score
-- **eNPV capital allocation** - greedy allocation under a fixed budget, ranked by risk-adjusted expected value
+- **Decision-respecting capital allocation** - greedy allocation under a fixed budget, ranked by eNPV; Kill decisions are excluded from funding eligibility
 - **Monte Carlo simulation** - 10,000 portfolio simulations via Gaussian copula to respect asset correlations
-- **Value of Information analysis** - Beta-Binomial predictive distribution computes the dollar value of enrolling N more patients before committing capital, answering "do we know enough to decide?"
+- **Value of Information analysis** - Beta-Binomial predictive distribution computes both gross EVSI and net EVSI (after trial costs) for each candidate sample size, answering "is it worth enrolling more patients before committing capital?"
 - **Scenario stress testing** - Tornado diagram + Bear/Base/Bull scenarios vary correlation, revenue, and cost assumptions to show which levers most move portfolio value
+- **Portfolio summary dashboard** - one-page consolidation of all decisions, capital allocation, portfolio value, and top data gap for investment committee review
 
 ---
 
@@ -49,11 +50,19 @@ Phase III assets face a stricter bar than Phase I - more capital at risk means h
 
 ## Value of Information - "Do we know enough to decide?"
 
-For each asset, the engine simulates every possible outcome of enrolling N additional patients (via the Beta-Binomial predictive distribution) and asks: would the new data change the decision? The Expected Value of Sample Information (EVSI) quantifies this in dollar terms.
+For each asset, the engine simulates every possible outcome of enrolling N additional patients (via the Beta-Binomial predictive distribution) and asks: would the new data change the decision? The Expected Value of Sample Information (EVSI) quantifies this in dollar terms. Net EVSI subtracts the trial cost ($50K/patient assumed for rare disease context) to identify whether additional enrollment is actually worth running.
 
 ![Value of Information](plots/value_of_information.png)
 
-Key insight: **Asset E (PNH, Phase I)** clears the Go threshold on PoTS alone, but has the highest EVSI at $14M - because the data is thin (1/3 responders) and the cost is $150M. A small chance of discovering it should be killed is worth a lot of money. Meanwhile **Asset D (NAFLD, Phase III)** is a confident Go with near-zero EVSI - the data already speaks clearly.
+| Asset | Decision | Peak EVSI | Net EVSI | Optimal N |
+|-------|----------|-----------|----------|-----------|
+| A | Go | $1.2M | $0.0M | N/A |
+| B | Repurpose | $4.6M | $1.2M | 30 |
+| C | Kill | $3.9M | $0.7M | 30 |
+| D | Go | $0.0M | $0.0M | N/A |
+| E | Go | $14.0M | $10.4M | 50 |
+
+Key insight: **Asset E (PNH, Phase I)** has the highest net EVSI at $10.4M - because the data is thin (1/3 responders) and the cost is $150M. A small chance of discovering it should be killed is worth enrolling 50 more patients. Meanwhile **Asset D (NAFLD, Phase III)** is a confident Go with zero EVSI - the data already speaks clearly.
 
 This is the question portfolio managers actually lose sleep over: *"Is it worth running 20 more patients, or do we already know enough?"*
 
@@ -82,6 +91,12 @@ Correlation barely moves the median but does widen the loss tail - it is a risk 
 ## Run it
 
 ```bash
-pip install numpy pandas matplotlib scipy ipywidgets
+pip install numpy pandas matplotlib scipy
 jupyter notebook portfolio_demo.ipynb
 ```
+
+---
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
